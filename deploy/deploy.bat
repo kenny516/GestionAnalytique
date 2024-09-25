@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 
-set "work_dir=D:\Test_FrameWork"
+set "work_dir=D:\Studies\L3\MrTovo\GestionAnalytique"
 set "lib=%work_dir%\lib"
 set "src=%work_dir%\src"
 set "web=%work_dir%\web"

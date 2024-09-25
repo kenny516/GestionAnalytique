@@ -8,3 +8,5 @@
 /dataSources.local.xml
 /.idea/
 .env
+/deploy/deploy.bat
+/web/WEB-INF/classes/
