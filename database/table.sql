@@ -67,6 +67,3 @@ create table AssoDepensesParts (
     FOREIGN KEY (idDepense) REFERENCES Depenses(id),
     FOREIGN KEY (idPart) REFERENCES PartsParCentre(id)
 )engine=innodb;
-
-
-select * from Depenses where id in ( select idDepense from AssoDepensesParts where idPart in (select id from PartsParCentre where idRubrique =  ? ))
