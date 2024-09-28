@@ -10,3 +10,5 @@
 .env
 /deploy/deploy.bat
 /web/WEB-INF/classes/
+/out/
+/temp/
