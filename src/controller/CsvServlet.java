@@ -19,6 +19,7 @@ public class CsvServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<?> data = Collections.singletonList(req.getParameter("data"));
         String fileName = req.getParameter("fileName");
+        
         Csv.exportToCSV(data,fileName+".csv");
     }
 
