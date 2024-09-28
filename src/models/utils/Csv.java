@@ -1,9 +1,6 @@
 package models.utils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -17,41 +14,40 @@ public class Csv {
     public Csv() {
     }
 
-    public static void exportToCSV(List<?> data, String fileName) throws IOException {
+    public static <T> void exportToCSV(List<T> data, OutputStream outputStream) throws IOException {
         if (data == null || data.isEmpty()) {
-            throw new IllegalArgumentException("Data list is empty or null");
-        }else{
-            try (FileWriter writer = new FileWriter(fileName)) {
-                Class<?> clazz = data.getFirst().getClass();
-                Field[] fields = clazz.getDeclaredFields();
+            throw new IllegalArgumentException("La liste de données est vide ou null");
+        }
 
-                // Write header
+        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+            Class<?> clazz = data.get(0).getClass();
+            Field[] fields = clazz.getDeclaredFields();
+
+            // Écrire l'en-tête
+            for (int i = 0; i < fields.length; i++) {
+                writer.append(fields[i].getName());
+                if (i < fields.length - 1) {
+                    writer.append(",");
+                }
+            }
+            writer.append("\n");
+
+            // Écrire les données
+            for (T obj : data) {
                 for (int i = 0; i < fields.length; i++) {
-                    writer.append(fields[i].getName());
+                    fields[i].setAccessible(true);
+                    Object value = fields[i].get(obj);
+                    writer.append(formatValue(value));
                     if (i < fields.length - 1) {
                         writer.append(",");
                     }
                 }
                 writer.append("\n");
-
-                // Write data
-                for (Object obj : data) {
-                    for (int i = 0; i < fields.length; i++) {
-                        fields[i].setAccessible(true);
-                        Object value = fields[i].get(obj);
-                        writer.append(formatValue(value));
-                        if (i < fields.length - 1) {
-                            writer.append(",");
-                        }
-                    }
-                    writer.append("\n");
-                }
-            } catch (IllegalAccessException e) {
-                throw new IOException("Error accessing object fields", e);
             }
+        } catch (IllegalAccessException e) {
+            throw new IOException("Erreur lors de l'accès aux champs de l'objet", e);
         }
     }
-
     public static <T> List<T> importFromCSV(String fileName, Class<T> clazz) throws IOException {
         List<T> result = new ArrayList<>();
 
