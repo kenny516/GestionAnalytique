@@ -3,23 +3,40 @@ package models;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Rubrique {
 	private int id;
 	private String nom;
 	private boolean estVariable;
-	private int idUniteOeuvre;
+	private UniteOeuvre uOeuvre;
 	private java.sql.Date dateInsertion;
+
+	private List<PartsParCentre> pCentre;
+	private List<Depenses> deps;
 
 	// Constructeurs
 	public Rubrique() {
 	}
 
-	public Rubrique(int id, String nom, boolean estVariable, int idUniteOeuvre, java.sql.Date dateInsertion) {
+	public Rubrique(int id, String nom, boolean estVariable, int idUniteOeuvre, java.sql.Date dateInsertion, Connection c)
+			throws Exception {
 		this.id = id;
 		this.nom = nom;
 		this.estVariable = estVariable;
-		this.idUniteOeuvre = idUniteOeuvre;
+		this.setUniteOeuvre(idUniteOeuvre);
+		this.setUniteOeuvre(c);
+		this.dateInsertion = dateInsertion;
+	}
+
+	public Rubrique(int id, String nom, boolean estVariable, int idUniteOeuvre, java.sql.Date dateInsertion, Connection c,
+			boolean tout) throws Exception {
+		this.id = id;
+		this.nom = nom;
+		this.estVariable = estVariable;
+		this.setUniteOeuvre(idUniteOeuvre);
+		this.setUniteOeuvre(c);
 		this.dateInsertion = dateInsertion;
 	}
 
@@ -49,11 +66,20 @@ public class Rubrique {
 	}
 
 	public int getIdUniteOeuvre() {
-		return idUniteOeuvre;
+		return uOeuvre.getId();
 	}
 
-	public void setIdUniteOeuvre(int idUniteOeuvre) {
-		this.idUniteOeuvre = idUniteOeuvre;
+	public UniteOeuvre getUniteOeuvre() {
+		return uOeuvre;
+	}
+
+	public void setUniteOeuvre(int idUniteOeuvre) {
+		this.uOeuvre = new UniteOeuvre();
+		this.uOeuvre.setId(idUniteOeuvre);
+	}
+
+	public void setUniteOeuvre(Connection c) throws Exception {
+		uOeuvre.getById(c, getIdUniteOeuvre());
 	}
 
 	public java.sql.Date getDateInsertion() {
@@ -64,8 +90,28 @@ public class Rubrique {
 		this.dateInsertion = dateInsertion;
 	}
 
+	public List<Rubrique> getAll(Connection c) throws Exception {
+		List<Rubrique> result = new ArrayList<>();
+		PreparedStatement ps = c.prepareStatement("select * from Rubrique");
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			Rubrique rq = new Rubrique();
+			rq.setId(rs.getInt("id"));
+			rq.setNom(rs.getString("nom"));
+			rq.setEstVariable(rs.getBoolean("estVariable"));
+			rq.setUniteOeuvre(rs.getInt("idUniteOeuvre"));
+			rq.setUniteOeuvre(c);
+			rq.setDateInsertion(rs.getDate("dateInsertion"));
+
+			result.add(rq);
+		}
+
+		return result;
+	}
+
 	// Méthodes pour CRUD
-	public void save(Connection c) throws Exception {
+	public void saveNoError(Connection c) throws Exception {
 		PreparedStatement ps = c
 				.prepareStatement("INSERT INTO Rubrique (nom, estVariable, idUniteOeuvre, dateInsertion) VALUES (?, ?, ?, ?)");
 		ps.setString(1, getNom());
@@ -76,7 +122,18 @@ public class Rubrique {
 		ps.close();
 	}
 
-	public void update(Connection c) throws Exception {
+	public void save(Connection c) throws Exception {
+		try {
+			c.setAutoCommit(false);
+			saveNoError(c);
+			c.commit();
+		} catch (Exception e) {
+			c.rollback();
+			throw e;
+		}
+	}
+
+	public void updateNoError(Connection c) throws Exception {
 		PreparedStatement ps = c.prepareStatement(
 				"UPDATE Rubrique SET nom = ?, estVariable = ?, idUniteOeuvre = ?, dateInsertion = ? WHERE id = ?");
 		ps.setString(1, getNom());
@@ -88,11 +145,33 @@ public class Rubrique {
 		ps.close();
 	}
 
-	public void delete(Connection c) throws Exception {
+	public void update(Connection c) throws Exception {
+		try {
+			c.setAutoCommit(false);
+			updateNoError(c);
+			c.commit();
+		} catch (Exception e) {
+			c.rollback();
+			throw e;
+		}
+	}
+
+	public void deleteNoError(Connection c) throws Exception {
 		PreparedStatement ps = c.prepareStatement("DELETE FROM Rubrique WHERE id = ?");
 		ps.setInt(1, getId());
 		ps.executeUpdate();
 		ps.close();
+	}
+
+	public void delete(Connection c) throws Exception {
+		try {
+			c.setAutoCommit(false);
+			deleteNoError(c);
+			c.commit();
+		} catch (Exception e) {
+			c.rollback();
+			throw e;
+		}
 	}
 
 	public void getById(Connection c, int id) throws Exception {
@@ -104,11 +183,83 @@ public class Rubrique {
 			this.id = rs.getInt("id");
 			this.nom = rs.getString("nom");
 			this.estVariable = rs.getBoolean("estVariable");
-			this.idUniteOeuvre = rs.getInt("idUniteOeuvre");
+			this.setUniteOeuvre(rs.getInt("idUniteOeuvre"));
 			this.dateInsertion = rs.getDate("dateInsertion");
 		}
 
 		rs.close();
 		ps.close();
+	}
+
+	public void getByIdAll(Connection c, int id) throws Exception {
+		getById(c, id);
+		setUniteOeuvre(c);
+		setpCentre(pCentre);
+	}
+
+	public List<PartsParCentre> getpCentre() {
+		return pCentre;
+	}
+
+	public List<Depenses> getDeps() {
+		return deps;
+	}
+
+	public void setDeps(List<Depenses> deps) {
+		this.deps = deps;
+	}
+
+	public void setpCentre(List<PartsParCentre> pCentre) {
+		this.pCentre = pCentre;
+	}
+
+	public void setpCentre(Connection c) throws Exception {
+		List<PartsParCentre> partsParCentre = new ArrayList<>();
+		PreparedStatement ps = c.prepareStatement(
+				"select * from PartsParCentre having dateInsertion = max(dateInsertion) and idRubrique = ? group by idCentre");
+		ps.setInt(1, id);
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			PartsParCentre parts = new PartsParCentre();
+			parts.setId(rs.getInt("id"));
+			parts.setRubrique(rs.getInt("idRubrique"));
+
+			parts.setCentre(rs.getInt("idCentre"));
+			parts.setCentre(c);
+
+			parts.setValeur(rs.getBigDecimal("valeur"));
+			parts.setDateInsertion(rs.getDate("dateInsertion"));
+		}
+
+		rs.close();
+		ps.close();
+
+		setpCentre(partsParCentre);
+	}
+
+	public void setDeps(java.sql.Date dateMin, java.sql.Date dateMax, Connection c) throws Exception {
+		List<Depenses> deps = new ArrayList<>();
+		PreparedStatement ps = c.prepareStatement(
+				"select * from Depenses where id in ( select idDepense from AssoDepensesParts where idPart in (select id from PartsParCentre where idRubrique = ? )) and dateDepense between ? and ?");
+		ps.setInt(1, getId());
+		ps.setDate(2, dateMin);
+		ps.setDate(3, dateMax);
+
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			Depenses depense = new Depenses();
+			depense.setId(rs.getInt("id"));
+			depense.setDate(rs.getDate("dateDepense"));
+			depense.setMontant(rs.getDouble("montant"));
+			deps.add(depense);
+		}
+
+		rs.close();
+		ps.close();
+
+		setDeps(deps);
 	}
 }
