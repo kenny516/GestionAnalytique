@@ -14,6 +14,9 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.List;
 
+// usage of export csv just use get with parameter type="produit" or type="production" or type="rubrique" or type="partsparcentre" or ....
+
+
 @WebServlet("/Csv")
 public class CsvServlet extends HttpServlet {
 
