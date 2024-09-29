@@ -163,6 +163,7 @@ public class AdministrationAnalytique {
         try {
             List<Depenses> liste = Depenses.getVariable(c, this.dateDebut, this.dateFin);
             for (Depenses depenses : liste) {
+                System.out.println(depenses.getMontant());
                 sum+=depenses.getMontant();
             }
         } catch (Exception e) {

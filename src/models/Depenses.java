@@ -202,7 +202,7 @@ public class Depenses {
 				c = Connect.getConnection();
 			}
 			List<Depenses> depenses = new ArrayList<>();
-			String query = "SELECT Depenses.* FROM Depenses " +
+			String query = "SELECT distinct Depenses.* FROM Depenses " +
                "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
                "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
                "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS true ";
@@ -212,6 +212,7 @@ public class Depenses {
 			int count = 1;
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			System.out.println(ps.toString());
 			ResultSet rs = ps.executeQuery();
 	
 			while (rs.next()) {
@@ -235,7 +236,7 @@ public class Depenses {
 				c = Connect.getConnection();
 			}
 			List<Depenses> depenses = new ArrayList<>();
-			String query = "SELECT Depenses.* FROM Depenses " +
+			String query = "SELECT distinct Depenses.* FROM Depenses " +
                "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
                "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
                "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS False ";
@@ -245,6 +246,8 @@ public class Depenses {
 			int count = 1;
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			System.out.println(ps.toString());
+
 			ResultSet rs = ps.executeQuery();
 	
 			while (rs.next()) {
