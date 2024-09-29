@@ -67,7 +67,7 @@ public class CsvServlet extends HttpServlet {
     // i need to implement method for import csv use the class Csv.java
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String type = request.getParameter("type");
-    String fileName = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\GestionAnalytique\\public\\csv\\null.csv";
+    String fileName = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\GestionAnalytique\\public\\csv\\"+type+".csv";
     try {
         Csv.ImportResult<?> importResult = Csv.importFromCSV(fileName, getObject(type).getClass());
         Connection connection = Connect.getConnection();
