@@ -11,15 +11,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import database.Connect;
-import database.QueryUtil;
+import database.*;
 
 public class AdministrationAnalytique {
-    private java.sql.Date  dateDebut;
-    private java.sql.Date  dateFin;
+    private java.sql.Date dateDebut;
+    private java.sql.Date dateFin;
     private List<Rubrique> rubriques;
 
-    public AdministrationAnalytique(Date dateDebut, Date dateFin) throws Exception{
+    public AdministrationAnalytique(Date dateDebut, Date dateFin) throws Exception {
         try {
             this.setDateDebut(dateDebut);
             this.setDateFin(dateFin);
@@ -28,28 +27,36 @@ public class AdministrationAnalytique {
             throw e;
         }
     }
-    public void setRubriques() throws Exception{
+
+    public void setRubriques() throws Exception {
         try {
             this.rubriques = Rubrique.getByPeriod(null, dateDebut, dateFin);
         } catch (Exception e) {
             throw e;
         }
     }
+
     public java.sql.Date getDateDebut() {
         return dateDebut;
-    }public java.sql.Date getDateFin() {
+    }
+
+    public java.sql.Date getDateFin() {
         return dateFin;
-    }public List<Rubrique> getRubriques() {
+    }
+
+    public List<Rubrique> getRubriques() {
         return rubriques;
-    } public void setDateDebut(java.sql.Date dateDebut) {
+    }
+
+    public void setDateDebut(java.sql.Date dateDebut) {
         this.dateDebut = dateDebut;
-    }public void setDateFin(java.sql.Date dateFin) {
+    }
+
+    public void setDateFin(java.sql.Date dateFin) {
         this.dateFin = dateFin;
     }
 
-
-    
-    public HashMap<Centre, double[]> getPartCentreParRubrique(Connection c, int idRubrique) throws Exception{
+    public HashMap<Centre, double[]> getPartCentreParRubrique(Connection c, int idRubrique) throws Exception {
         Date starDate = this.getDateDebut();
         Date endDate = this.getDateFin();
         HashMap<Centre, double[]> result = new HashMap<Centre, double[]>();
@@ -67,10 +74,10 @@ public class AdministrationAnalytique {
         query+=" GROUP BY Centre.id, PartsParCentre.idRubrique";
         // System.out.println(query);
         try {
-            if(c==null){
+            if (c == null) {
                 c = Connect.getConnection();
             }
-            PreparedStatement ps = c.prepareStatement( query);
+            PreparedStatement ps = c.prepareStatement(query);
             int count = 2;
             ps.setInt(1, idRubrique);
             count = QueryUtil.setStatement(ps, starDate, this.dateFin, count);
@@ -82,26 +89,26 @@ public class AdministrationAnalytique {
                 Centre centre = new Centre(rs.getInt("id"), rs.getString("nom"), rs.getInt("idNature"));
                 double part = rs.getDouble("part");
                 double total = rs.getDouble("total");
-                result.put(centre, new double[]{part, total});
-            }  
-            ps.close(); 
+                result.put(centre, new double[] { part, total });
+            }
+            ps.close();
             rs.close();
         } catch (Exception e) {
             throw e;
-        } 
-        return result;  
+        }
+        return result;
     }
 
-    public List<HashMap<Centre, double[]>> getPartCentreAllRubrique(Connection c) throws Exception{
+    public List<HashMap<Centre, double[]>> getPartCentreAllRubrique(Connection c) throws Exception {
         List<HashMap<Centre, double[]>> result = new ArrayList<>();
         try {
-            if(c==null){
+            if (c == null) {
                 c = Connect.getConnection();
             }
             for (Rubrique r : rubriques) {
                 result.add(this.getPartCentreParRubrique(c, r.getId()));
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw e;
         }
         return result;
@@ -109,24 +116,24 @@ public class AdministrationAnalytique {
 
     public HashMap<Centre, Double> getTotalDepenseParCentre(Connection c) throws Exception {
         HashMap<Centre, Double> result = new HashMap<Centre, Double>();
-    
-        String query = "SELECT Centre.*, " +
-        "SUM(depenses.montant * (PartsParCentre.valeur / 100)) as total " +
-        "FROM Depenses " +
-        "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
-        "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
-        "JOIN Centre ON Centre.id = PartsParCentre.idCentre " +
-        "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique " +
-        "WHERE 1=1 ";
 
-        query+=QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "dateDepense");
-        query+=QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "Rubrique.dateInsertion");
-        query+=" GROUP BY Centre.id, PartsParCentre.idRubrique";
+        String query = "SELECT Centre.*, " +
+                "SUM(depenses.montant * (PartsParCentre.valeur / 100)) as total " +
+                "FROM Depenses " +
+                "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
+                "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
+                "JOIN Centre ON Centre.id = PartsParCentre.idCentre " +
+                "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique " +
+                "WHERE 1=1 ";
+
+        query += QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "dateDepense");
+        query += QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "Rubrique.dateInsertion");
+        query += " GROUP BY Centre.id, PartsParCentre.idRubrique";
         try {
-            if(c==null){
+            if (c == null) {
                 c = Connect.getConnection();
             }
-            PreparedStatement ps = c.prepareStatement( query);
+            PreparedStatement ps = c.prepareStatement(query);
             int count = 1;
             count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
             count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
@@ -136,13 +143,13 @@ public class AdministrationAnalytique {
                 Centre centre = new Centre(rs.getInt("id"), rs.getString("nom"), rs.getInt("idNature"));
                 double total = rs.getDouble("total");
                 result.put(centre, total);
-            }  
-            ps.close(); 
+            }
+            ps.close();
             rs.close();
         } catch (Exception e) {
             throw e;
-        } 
-        return result;  
+        }
+        return result;
     }
 
     public double getTotalDepense(Connection c) throws Exception {
@@ -150,19 +157,20 @@ public class AdministrationAnalytique {
         try {
             List<Depenses> liste = Depenses.getByPeriod(c, this.dateDebut, this.dateFin);
             for (Depenses depenses : liste) {
-                sum+=depenses.getMontant();
+                sum += depenses.getMontant();
             }
         } catch (Exception e) {
             throw e;
         }
         return sum;
     }
+
     public double getTotalDepenseVariable(Connection c) throws Exception {
         double sum = 0;
         try {
             List<Depenses> liste = Depenses.getVariable(c, this.dateDebut, this.dateFin);
             for (Depenses depenses : liste) {
-                sum+=depenses.getMontant();
+                sum += depenses.getMontant();
             }
         } catch (Exception e) {
             throw e;
@@ -175,7 +183,7 @@ public class AdministrationAnalytique {
         try {
             List<Depenses> liste = Depenses.getInvariable(c, this.dateDebut, this.dateFin);
             for (Depenses depenses : liste) {
-                sum+=depenses.getMontant();
+                sum += depenses.getMontant();
             }
         } catch (Exception e) {
             throw e;
