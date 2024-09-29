@@ -1,16 +1,32 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: --- Load .env variables ---
+set "env_file=../.env"  :: Use the full path to the .env file
+if exist "%env_file%" (
+    for /f "tokens=1,2 delims==" %%a in (%env_file%) do (
+        set %%a=%%b
+    )
+) else (
+    echo Error: .env file not found.
+    exit /b 1
+)
 
-set "work_dir=D:\Studies\L3\MrTovo\GestionAnalytique"
+:: Echo the values for confirmation
+echo WORK_DIR=%WORK_DIR%
+echo PROJECT_NAME=%PROJECT_NAME%
+echo WEB_APP_DIRECTORY=%WEB_APP_DIRECTORY%
+echo ---
+
+set "work_dir=%WORK_DIR%"
 set "lib=%work_dir%\lib"
 set "src=%work_dir%\src"
 set "web=%work_dir%\web"
 set "web_xml=%work_dir%\web\WEB-INF\web.xml"
-set "temp=D:\deploiment\Temporaire\dossier"
+set "temp=%WORK_DIR%\temp"
 
-set "war_name=FrontController"
-set "web_apps=C:\Program Files\Apache Software Foundation\Tomcat 10.1\webapps"
+set "war_name=%PROJECT_NAME%"
+set "web_apps=%WEB_APP_DIRECTORY%"
 
 
 
@@ -94,7 +110,7 @@ echo Done, "%war_name%.war" file created.
 @REM --- DEPLOY WAR FILE ---
 echo * Deploying "%war_name%.war" file...
 :: Deploy the .war file to the Tomcat webapps directory
-copy /y "%work_dir%\%war_name%.war" "%web_apps%"
+copy /y "%work_dir%\%war_name%.war" %web_apps%
 echo Done, "%war_name%.war" file deployed.
 
 :: Delete the .war file in the work_dir after deployment

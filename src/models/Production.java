@@ -3,10 +3,12 @@ package models;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Production {
 	private int id;
-	private int idProduit;
+	private Produit produit;
 	private java.sql.Date date;
 	private java.math.BigDecimal quantite;
 
@@ -14,9 +16,17 @@ public class Production {
 	public Production() {
 	}
 
-	public Production(int id, int idProduit, java.sql.Date date, java.math.BigDecimal quantite) {
+	public Production(int id, int idProduit, java.sql.Date date, java.math.BigDecimal quantite , Connection c) throws Exception{
 		this.id = id;
-		this.idProduit = idProduit;
+		setProduit(idProduit);
+		setProduit(c);
+		this.date = date;
+		this.quantite = quantite;
+	}
+
+	public Production(int id, int idProduit, java.sql.Date date, java.math.BigDecimal quantite){
+		setProduit(idProduit);
+		setProduit(idProduit);
 		this.date = date;
 		this.quantite = quantite;
 	}
@@ -31,12 +41,18 @@ public class Production {
 	}
 
 	public int getIdProduit() {
-		return idProduit;
+		return produit.getId();
 	}
 
-	public void setIdProduit(int idProduit) {
-		this.idProduit = idProduit;
+	public void setProduit(int idProduit){
+		this.produit = new Produit();
+		produit.setId(idProduit);
 	}
+
+	public void setProduit(Connection c) throws Exception{
+		produit.getById(c, produit.getId());
+	}
+
 
 	public java.sql.Date getDate() {
 		return date;
@@ -54,8 +70,29 @@ public class Production {
 		this.quantite = quantite;
 	}
 
+	public List<Production> getAll(Connection c) throws Exception {
+		List<Production> all = new ArrayList<>();
+		PreparedStatement ps = c.prepareStatement("select * from Production");
+		ResultSet rs = ps.executeQuery();
+
+		while (rs.next()) {
+			Production prod = new Production();
+			prod.setId(rs.getInt("id"));
+			prod.setProduit(rs.getInt("idProduit"));
+			setProduit(c);
+			prod.setDate(rs.getDate("date"));
+			prod.setQuantite(rs.getBigDecimal("quantite"));
+			all.add(prod);
+		}
+
+		rs.close();
+		ps.close();
+
+		return all;
+	}
+
 	// Méthodes pour CRUD
-	public void save(Connection c) throws Exception {
+	public void saveNoError(Connection c) throws Exception {
 		PreparedStatement ps = c.prepareStatement("INSERT INTO Production (idProduit, date, quantite) VALUES (?, ?, ?)");
 		ps.setInt(1, getIdProduit());
 		ps.setDate(2, getDate());
@@ -64,7 +101,7 @@ public class Production {
 		ps.close();
 	}
 
-	public void update(Connection c) throws Exception {
+	public void updateNoError(Connection c) throws Exception {
 		PreparedStatement ps = c
 				.prepareStatement("UPDATE Production SET idProduit = ?, date = ?, quantite = ? WHERE id = ?");
 		ps.setInt(1, getIdProduit());
@@ -75,11 +112,44 @@ public class Production {
 		ps.close();
 	}
 
-	public void delete(Connection c) throws Exception {
+	public void deleteNoError(Connection c) throws Exception {
 		PreparedStatement ps = c.prepareStatement("DELETE FROM Production WHERE id = ?");
 		ps.setInt(1, getId());
 		ps.executeUpdate();
 		ps.close();
+	}
+
+	public void save(Connection c) throws Exception {
+		try {
+			c.setAutoCommit(false);
+			saveNoError(c);
+			c.commit();
+		} catch (Exception e) {
+			c.rollback();
+			throw e;
+		}
+	}
+
+	public void update(Connection c) throws Exception {
+		try {
+			c.setAutoCommit(false);
+			updateNoError(c);
+			c.commit();
+		} catch (Exception e) {
+			c.rollback();
+			throw e;
+		}
+	}
+
+	public void delete(Connection c) throws Exception {
+		try {
+			c.setAutoCommit(false);
+			deleteNoError(c);
+			c.commit();
+		} catch (Exception e) {
+			c.rollback();
+			throw e;
+		}
 	}
 
 	public void getById(Connection c, int id) throws Exception {
@@ -89,12 +159,17 @@ public class Production {
 
 		if (rs.next()) {
 			this.id = rs.getInt("id");
-			this.idProduit = rs.getInt("idProduit");
+			setProduit(rs.getInt("idProduit"));
 			this.date = rs.getDate("date");
 			this.quantite = rs.getBigDecimal("quantite");
 		}
 
 		rs.close();
 		ps.close();
+	}
+
+	public void getByIdAll(Connection c, int id) throws Exception {
+		getById(c, id);
+		setProduit(c);
 	}
 }
