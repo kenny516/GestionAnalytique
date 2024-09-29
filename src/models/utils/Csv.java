@@ -27,7 +27,7 @@ public class Csv {
         }
 
         try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
-            Class<?> clazz = data.get(0).getClass(); // Fix for first element access
+            Class<?> clazz = data.getFirst().getClass(); // Fix for first element access
             Field[] fields = clazz.getDeclaredFields();
 
             // Write the CSV header
