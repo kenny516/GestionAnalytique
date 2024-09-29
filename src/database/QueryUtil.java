@@ -17,7 +17,7 @@ public class QueryUtil {
         return query;
     }
 
-    public static void setStatement(PreparedStatement statement,Date startDate, Date endDate, int count)throws Exception{
+    public static int setStatement(PreparedStatement statement,Date startDate, Date endDate, int count)throws Exception{
         try{
             if (startDate != null && endDate != null) {
                 statement.setDate(count, startDate);
@@ -31,6 +31,7 @@ public class QueryUtil {
                 statement.setDate(count, endDate);
                 count++;
             }
+            return count;
         } catch(Exception e){
             throw e;
         }

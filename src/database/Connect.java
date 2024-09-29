@@ -5,11 +5,17 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Connect {
-	private static final String DB_URL = "jdbc:mysql://localhost:3306/gestion_analytique";
-	private static final String DB_USER = "your_username";
-	private static final String DB_PASSWORD = "your_password";
+	private static final String DB_URL = "jdbc:mysql://localhost:3306/gestion_analytique?serverTimezone=Africa/Nairobi";
+	private static final String DB_USER = "root";
+	private static final String DB_PASSWORD = "root";
 
-	public static Connection getConnection() throws SQLException {
+	public static Connection getConnection() throws Exception {
+		try{
+		Class.forName("com.mysql.cj.jdbc.Driver");
 		return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+			
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 }

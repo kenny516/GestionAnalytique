@@ -210,8 +210,8 @@ public class Depenses {
 			query+=QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
 			PreparedStatement ps = c.prepareStatement( query);
 			int count = 1;
-			QueryUtil.setStatement(ps, startDate, endDate, count);
-			QueryUtil.setStatement(ps, startDate, endDate, count);
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			ResultSet rs = ps.executeQuery();
 	
 			while (rs.next()) {
@@ -243,8 +243,8 @@ public class Depenses {
 			query+=QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
 			PreparedStatement ps = c.prepareStatement( query);
 			int count = 1;
-			QueryUtil.setStatement(ps, startDate, endDate, count);
-			QueryUtil.setStatement(ps, startDate, endDate, count);
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			ResultSet rs = ps.executeQuery();
 	
 			while (rs.next()) {
