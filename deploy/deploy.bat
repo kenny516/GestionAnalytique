@@ -2,14 +2,14 @@
 setlocal enabledelayedexpansion
 
 
-set "work_dir=D:\Studies\L3\MrTovo\GestionAnalytique"
+set "work_dir=D:\GitHub\GestionAnalytique"
 set "lib=%work_dir%\lib"
 set "src=%work_dir%\src"
 set "web=%work_dir%\web"
 set "web_xml=%work_dir%\web\WEB-INF\web.xml"
-set "temp=D:\deploiment\Temporaire\dossier"
+set "temp=D:\Deploiment\temporaire"
 
-set "war_name=FrontController"
+set "war_name=GestionAnalytique"
 set "web_apps=C:\Program Files\Apache Software Foundation\Tomcat 10.1\webapps"
 
 
