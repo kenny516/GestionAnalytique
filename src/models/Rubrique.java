@@ -1,11 +1,12 @@
 package models;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-
+import database.*;
 public class Rubrique {
 	private int id;
 	private String nom;
@@ -191,6 +192,39 @@ public class Rubrique {
 		ps.close();
 	}
 
+	public static List<Rubrique> getByPeriod(Connection c, Date startDate, Date endDate) throws Exception {
+		try {
+			if (c == null) {
+				c = Connect.getConnection();
+			}
+			List<Rubrique> result = new ArrayList<>();
+			String query = "SELECT * FROM Rubrique WHERE 1=1 ";
+			query+=QueryUtil.getFilterQuery(startDate, endDate, "dateInsertion");
+			PreparedStatement ps = c.prepareStatement( query);
+			QueryUtil.setStatement(ps, startDate, endDate, 1);
+			ResultSet rs = ps.executeQuery();
+	
+			while (rs.next()) {
+				Rubrique rq = new Rubrique();
+				rq.setId(rs.getInt("id"));
+				rq.setNom(rs.getString("nom"));
+				rq.setEstVariable(rs.getBoolean("estVariable"));
+				rq.setUniteOeuvre(rs.getInt("idUniteOeuvre"));
+				rq.setUniteOeuvre(c);
+				rq.setDateInsertion(rs.getDate("dateInsertion"));
+	
+				result.add(rq);
+			}
+			rs.close();
+			ps.close();
+			return result;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	
+
 	public void getByIdAll(Connection c, int id) throws Exception {
 		getById(c, id);
 		setUniteOeuvre(c);
@@ -262,4 +296,6 @@ public class Rubrique {
 
 		setDeps(deps);
 	}
+
+
 }
