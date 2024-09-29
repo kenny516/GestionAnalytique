@@ -31,6 +31,7 @@ public class CsvServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException("Erreur lors de l'exportation CSV", e);
         }
+
     }
 
     private List<?> getData(String type) throws Exception {
