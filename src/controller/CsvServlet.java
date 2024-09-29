@@ -49,5 +49,37 @@ public class CsvServlet extends HttpServlet {
             default -> throw new IllegalArgumentException("Type de données non reconnu : " + type);
         };
     }
+    private Object getObject(String type){
+        return switch (type.toLowerCase()) {
+            case "production" -> new Production();
+            case "produit" -> new Produit();
+            case "rubrique" -> new Rubrique();
+            case "partsparcentre" -> new PartsParCentre();
+            case "depenses" -> new Depenses();
+            case "assodepensesparts" -> new AssoDepensesParts();
+            case "centre" -> new Centre();
+            case "naturecentre" -> new NatureCentre();
+            case "uniteoeuvre" -> new UniteOeuvre();
+            default -> throw new IllegalArgumentException("Type de données non reconnu : " + type);
+        };
+    }
+
+    // i need to implement method for import csv use the class Csv.java
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    String type = request.getParameter("type");
+    String fileName = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\GestionAnalytique\\public\\csv\\null.csv";
+    try {
+        Csv.ImportResult<?> importResult = Csv.importFromCSV(fileName, getObject(type).getClass());
+        Connection connection = Connect.getConnection();
+        for (Object obj : importResult.getSuccessfulImports()) {
+            response.getWriter().println("Importation réussie : " + obj);
+        }
+        for (Csv.ImportError error : importResult.getErrors()) {
+            response.getWriter().println("Erreur à la ligne " + error.getLineNumber() + " : " + error.getErrorMessage());
+        }
+    } catch (Exception e) {
+        throw new ServletException("Erreur lors de l'importation CSV", e);
+    }
+}
     
 }
