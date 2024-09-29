@@ -65,6 +65,7 @@ public class AdministrationAnalytique {
         query+=QueryUtil.getFilterQuery(starDate, endDate, "dateDepense");
         query+=QueryUtil.getFilterQuery(starDate, endDate, "Rubrique.dateInsertion");
         query+=" GROUP BY Centre.id, PartsParCentre.idRubrique";
+        // System.out.println(query);
         try {
             if(c==null){
                 c = Connect.getConnection();
@@ -72,8 +73,9 @@ public class AdministrationAnalytique {
             PreparedStatement ps = c.prepareStatement( query);
             int count = 2;
             ps.setInt(1, idRubrique);
-            QueryUtil.setStatement(ps, starDate, this.dateFin, count);
-            QueryUtil.setStatement(ps, starDate, this.dateFin, count);
+            count = QueryUtil.setStatement(ps, starDate, this.dateFin, count);
+            // System.out.println(count);
+            count = QueryUtil.setStatement(ps, starDate, this.dateFin, count);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -126,8 +128,8 @@ public class AdministrationAnalytique {
             }
             PreparedStatement ps = c.prepareStatement( query);
             int count = 1;
-            QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
-            QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
+            count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
+            count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
