@@ -125,10 +125,10 @@ public class AdministrationAnalytique {
                 "JOIN Centre ON Centre.id = PartsParCentre.idCentre " +
                 "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique " +
                 "WHERE 1=1 ";
-
-        query += QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "dateDepense");
-        query += QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "Rubrique.dateInsertion");
-        query += " GROUP BY Centre.id, PartsParCentre.idRubrique";
+                
+        query+=QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "dateDepense");
+        query+=QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "Rubrique.dateInsertion");
+        query+=" GROUP BY Centre.id";
         try {
             if (c == null) {
                 c = Connect.getConnection();
@@ -137,6 +137,7 @@ public class AdministrationAnalytique {
             int count = 1;
             count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
             count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
+            System.err.println(ps.toString());
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {

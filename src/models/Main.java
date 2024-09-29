@@ -13,9 +13,9 @@ public class Main {
             Connect connect = new Connect();
             Connection c = connect.getConnection();
             AdministrationAnalytique a = new AdministrationAnalytique(Date.valueOf("2024-08-01"), Date.valueOf("2024-09-21"));
-            List<HashMap<Centre, double[]>> l = a.getPartCentreAllRubrique(c);
+            HashMap<Centre, Double> l = a.getTotalDepenseParCentre(c);
 
-            
+            System.err.println(l.size());
         } catch (Exception e) {
             e.printStackTrace();
         }
