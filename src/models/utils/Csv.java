@@ -186,7 +186,7 @@ public class Csv {
             } else if (type == boolean.class || type == Boolean.class) {
                 field.set(obj, Boolean.parseBoolean(value));
             } else if (type == Date.class) {
-                field.set(obj, DATE_FORMAT.parse(value));
+                field.set(obj, java.sql.Date.valueOf(value)); // format yyy-mm-dd
             } else if (type == BigDecimal.class) {
                 field.set(obj, new BigDecimal(value));
             } else {
