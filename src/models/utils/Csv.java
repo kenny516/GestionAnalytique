@@ -125,6 +125,15 @@ public class Csv {
                             Rubrique rubrique = new Rubrique();
                             rubrique.setId(Integer.parseInt(values[i]));
                             field.set(obj, rubrique);
+                        } else if (field.getName().equals("pCentre")) {
+                            List<PartsParCentre> pCentreList = new ArrayList<>();
+                            String[] pCentreIds = values[i].replace("[", "").replace("]", "").split(",");
+                            for (String id : pCentreIds) {
+                                PartsParCentre pCentre = new PartsParCentre();
+                                pCentre.setId(Integer.parseInt(id.trim()));
+                                pCentreList.add(pCentre);
+                            }
+                            field.set(obj, pCentreList);
                         } else {
                             // Handle regular types (e.g., String, int, Date, etc.)
                             setFieldValue(obj, field, values[i]);
@@ -144,6 +153,7 @@ public class Csv {
 
         return new ImportResult<>(successfulImports, errors);
     }
+
     private static <T> void invokeSaveMethod(T obj) throws Exception {
         try {
             Connection connection = Connect.getConnection();

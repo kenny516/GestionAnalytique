@@ -76,7 +76,7 @@ public class Depenses {
 		ps.close();
 	}
 
-	public void save(Connection c) throws Exception {
+	public void saveDepensetsotsa(Connection c) throws Exception {
 		try {
 			c.setAutoCommit(false);
 			saveNoError(c);
@@ -87,12 +87,12 @@ public class Depenses {
 		}
 	}
 
-	public void save(Connection c,List<PartsParCentre> pc) throws Exception {
+	public void save(Connection c) throws Exception {
 		try {
 			c.setAutoCommit(false);
 
 			saveNoError(c);
-			for (PartsParCentre partsParCentre : pc) {
+			for (PartsParCentre partsParCentre : getpCentre()) {
 				AssoDepensesParts p = new AssoDepensesParts(0, getId(),partsParCentre.getId());
 				p.saveNoError(c);
 			}
