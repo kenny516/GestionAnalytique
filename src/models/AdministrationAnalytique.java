@@ -191,4 +191,24 @@ public class AdministrationAnalytique {
         }
         return sum;
     }
+
+    public static double[] get(HashMap<Centre, double[]> dataPerCentre, Centre key) {
+        for (Map.Entry<Centre, double[]> entry : dataPerCentre.entrySet()) {
+            if (entry.getKey().getId() == key.getId()) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    public static Double getDouble(HashMap<Centre, Double> totalParCentres, Centre key) {
+        for (Map.Entry<Centre, Double> entry : totalParCentres.entrySet()) {
+            if (entry.getKey().getId() == key.getId()) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
 }

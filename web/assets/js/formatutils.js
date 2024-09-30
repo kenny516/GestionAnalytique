@@ -10,3 +10,7 @@ function formatDateFR(dateStr) {
 
     return formattedDate;
 }
+
+function formatNumberToFrenchLocale(number) {
+    return new Intl.NumberFormat('fr-FR').format(number);
+}

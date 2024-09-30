@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -70,7 +71,7 @@ public class AnalyticServlet extends HttpServlet {
             HashMap<Centre, Double> parCentre = aa.getTotalDepenseParCentre(c);
             Set<Centre> centres = parCentre.keySet();
 
-            req.setAttribute("centres", centres); // sending all the centres
+            req.setAttribute("centres", new ArrayList<Centre>(centres)); // sending all the centres
 
             // sending the totals (to avoid calculations in frontend)
             req.setAttribute("totalParCentre", parCentre); 

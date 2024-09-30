@@ -5,20 +5,11 @@
 
 AdministrationAnalytique aa = (AdministrationAnalytique) request.getAttribute("adminAnalytics");
 
-Set<Centre> centres = (Set<Centre>) request.getAttribute("centres");
+ArrayList<Centre> centres = (ArrayList<Centre>) request.getAttribute("centres");
 HashMap<Centre, Double> pCentres = (HashMap<Centre, Double>) request.getAttribute("totalParCentre");
 
-if (pCentres != null && !pCentres.isEmpty()) {
-    // Iterate through the HashMap and print each Centre's nom and Double value
-    for (Map.Entry<Centre, Double> entry : pCentres.entrySet()) {
-        Centre centre = entry.getKey();
-        Double total = entry.getValue();
-
-        out.println("Centre: " + centre.getNom() + " - Total: " + total + "<br>");
-    }
-} else {
-    out.println("No data available.");
-}
+List<Rubrique> rubriques = (List<Rubrique>) aa.getRubriques();
+List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>) request.getAttribute("partsAndTotal");
 
 %>
 <!DOCTYPE html>
@@ -33,7 +24,13 @@ if (pCentres != null && !pCentres.isEmpty()) {
       crossorigin="anonymous"
     />
     <title>Gestion analytique</title>
-    <script src="./assets/js/dateutils.js"></script>
+    <script src="./assets/js/formatutils.js"></script>
+
+    <style>
+    .number-cell {
+      text-align: right;
+    }
+    </style>
   </head>
   <body class="py-5">
     <div class="d-flex flex-column align-items-center justify-content-center">
@@ -47,31 +44,72 @@ if (pCentres != null && !pCentres.isEmpty()) {
           <thead>
             <tr>
               <th>Rubrique</th>
-              <th>Total</th>
               <th>Unite d'oeuvre</th>
-              <th>Nature</th>
+              <th>Variable</th>
+              <th>Total</th>
               <% for(Centre c : centres) { %>
                 <th colspan="3"><%= c.getNom() %></th>
               <% } %>
             </tr>
             <tr>
-              <th colspan="4"></th>
-              <th>%</th>
-              <th>Fixe</th>
-              <th>Variable</th>
+                <th colspan="4"></th>
+              <% for(Centre c : centres) { %>
+                <th>%</th>
+                <th>Fixe</th>
+                <th>Variable</th>
+              <% } %>
             </tr>
           </thead>
           <tbody>
+          <% for(int i = 0; i < rubriques.size(); i++) { 
+            Rubrique r = rubriques.get(i);
+            
+          %>
             <tr>
-              <td>Poo</td>
-              <td>780000</td>
-              <td>KG</td>
-              <td>Variable</td>
-              <td>75</td>
-              <td>0</td>
-              <td>stuff</td>
+              <td><%= r.getNom() %></td>
+              <td><%= r.getUniteOeuvre().getNom() %></td>
+              <td>
+                <%
+                
+                  String checked = r.isEstVariable() ? "checked" : "";
+                
+                %>
+                <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedDisabled" <%= checked %> disabled>
+              </td>
+              <td class="number-cell">780000</td>
+              <% 
+                HashMap<Centre, double[]> dataPerCentre = partsAndTotal.get(i);
+
+                for(Centre c : centres) { 
+                  double[] values = AdministrationAnalytique.get(dataPerCentre, c);
+                  double fixe = r.isEstVariable() ? 0 : values[1];
+                  double variable = r.isEstVariable() ? values[1] : 0;
+              %>
+                <td class="number-cell"><%= values[0] %></td>
+                <td class="number-cell"><%= fixe %></td>
+                <td class="number-cell"><%= variable %></td>
+              <% } %>
             </tr>
+          <% } %>
           </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="3">Total</th>
+              <td class="number-cell">
+                <%
+                double overallTotal = (double) request.getAttribute("overallTotal");
+                out.println(overallTotal);
+                %>
+              </td>
+                <% 
+                
+                  for(Centre c : centres) { 
+                  Double d = AdministrationAnalytique.getDouble(pCentres, c);
+                %>
+                <td class="number-cell" colspan="3"><%= d %></td>
+              <% } %>
+            </tr>
+          </tfoot>
         </table>
       </div>
 
@@ -84,6 +122,13 @@ if (pCentres != null && !pCentres.isEmpty()) {
 
         startSpan.innerHTML = formatDateFR(startDate);
         endSpan.innerHTML = formatDateFR(endDate);
+
+        numbersElements = document.getElementsByClassName("number-cell");
+        for(let n of numbersElements) {
+          let number = n.innerHTML;
+          let formattedNB = formatNumberToFrenchLocale(number);
+          n.innerHTML= formattedNB;
+        }
       </script>
     </div>
 
