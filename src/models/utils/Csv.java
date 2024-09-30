@@ -45,18 +45,30 @@ public class Csv {
                 for (int i = 0; i < fields.length; i++) {
                     fields[i].setAccessible(true);
                     Object value = fields[i].get(obj); // Get the field value
-
-                    // For custom object types, we only export the `id` field (assuming it exists)
-                    switch (value) {
-                        case UniteOeuvre uniteOeuvre -> writer.append(String.valueOf(uniteOeuvre.getId()));
-                        case Centre centre -> writer.append(String.valueOf(centre.getId()));
-                        case Depenses depenses -> writer.append(String.valueOf(depenses.getId()));
-                        case NatureCentre natureCentre -> writer.append(String.valueOf(natureCentre.getId()));
-                        case PartsParCentre partsParCentre -> writer.append(String.valueOf(partsParCentre.getId()));
-                        case Produit produit -> writer.append(String.valueOf(produit.getId()));
-                        case Production production -> writer.append(String.valueOf(production.getId()));
-                        case Rubrique rubrique -> writer.append(String.valueOf(rubrique.getId()));
-                        case null, default -> writer.append(formatValue(value));
+                    if (fields[i].getName().equals("pCentre")) {
+                        List<PartsParCentre> pCentreList = (List<PartsParCentre>) value;
+                        StringBuilder pCentreIds = new StringBuilder("[");
+                        for (int j = 0; j < pCentreList.size(); j++) {
+                            pCentreIds.append(pCentreList.get(j).getId());
+                            if (j < pCentreList.size() - 1) {
+                                pCentreIds.append(",");
+                            }
+                        }
+                        pCentreIds.append("]");
+                        writer.append(pCentreIds.toString());
+                    } else {
+                        // For custom object types, we only export the `id` field (assuming it exists)
+                        switch (value) {
+                            case UniteOeuvre uniteOeuvre -> writer.append(String.valueOf(uniteOeuvre.getId()));
+                            case Centre centre -> writer.append(String.valueOf(centre.getId()));
+                            case Depenses depenses -> writer.append(String.valueOf(depenses.getId()));
+                            case NatureCentre natureCentre -> writer.append(String.valueOf(natureCentre.getId()));
+                            case PartsParCentre partsParCentre -> writer.append(String.valueOf(partsParCentre.getId()));
+                            case Produit produit -> writer.append(String.valueOf(produit.getId()));
+                            case Production production -> writer.append(String.valueOf(production.getId()));
+                            case Rubrique rubrique -> writer.append(String.valueOf(rubrique.getId()));
+                            case null, default -> writer.append(formatValue(value));
+                        }
                     }
 
                     if (i < fields.length - 1) {
