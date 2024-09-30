@@ -6,8 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
 import database.Connect;
-import database.QueryUtil;
 
 public class Depenses {
 	private int id;
