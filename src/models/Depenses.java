@@ -76,7 +76,7 @@ public class Depenses {
 		ps.close();
 	}
 
-	public void saveDepensetsotsa(Connection c) throws Exception {
+	public void savetsotsa(Connection c) throws Exception {
 		try {
 			c.setAutoCommit(false);
 			saveNoError(c);
