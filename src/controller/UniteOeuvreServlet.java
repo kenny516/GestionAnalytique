@@ -30,6 +30,7 @@ public class UniteOeuvreServlet extends HttpServlet {
 
         try (Connection conn = Connect.getConnection()) {
             uniteOeuvre.save(conn);
+            response.sendRedirect(request.getContextPath() + "/UniteOeuvreServlet");
         } catch (Exception e) {
             e.printStackTrace();
         }

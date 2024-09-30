@@ -1,11 +1,10 @@
 package controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-
-import com.google.gson.Gson;
 
 import database.Connect;
 import jakarta.servlet.http.HttpServlet;
@@ -21,6 +20,7 @@ public class RubriqueServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         List<UniteOeuvre> uniteOeuvres = null;
 
         try (Connection connection = Connect.getConnection()) {
@@ -31,20 +31,13 @@ public class RubriqueServlet extends HttpServlet {
             e.printStackTrace();
         }
 
-        Gson gson = new Gson();
-        String jsonUniteOeuvres = gson.toJson(uniteOeuvres);
-
-        // Passer le JSON à la JSP
-        response.setCharacterEncoding("UTF-8");
-
-        request.setAttribute("uniteOeuvresJson", jsonUniteOeuvres);
+        request.setAttribute("ListuniteOeuvres", uniteOeuvres);
         request.setAttribute("page", "rubrique");
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
-
         String nom = request.getParameter("nom");
         String idUniteOeuvreStr = request.getParameter("idUniteOeuvre");
         String estVariableStr = request.getParameter("estVariable");
@@ -58,12 +51,19 @@ public class RubriqueServlet extends HttpServlet {
             Rubrique r = new Rubrique(nom,estVariable,uo,date);
 
             r.save(conn);
+
+
+            response.sendRedirect(request.getContextPath() + "/PartsServlet");
             
         } catch (Exception e) {
-            e.printStackTrace();
+            out.println(e);
+            
+            for (StackTraceElement iterable_element : e.getStackTrace()) {
+                out.print(iterable_element);
+            }
+            out.flush();
         }
 
     }
-
 
 }

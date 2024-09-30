@@ -2,12 +2,12 @@
 setlocal enabledelayedexpansion
 
 
-set "work_dir=D:\GitHub\GestionAnalytique"
+set "work_dir=C:\Users\climi\Documents\GestionAnalytique"
 set "lib=%work_dir%\lib"
 set "src=%work_dir%\src"
 set "web=%work_dir%\web"
 set "web_xml=%work_dir%\web\WEB-INF\web.xml"
-set "temp=D:\Deploiment\temporaire"
+set "temp=C:\depl\gest_entr_temp"
 
 set "war_name=GestionAnalytique"
 set "web_apps=C:\Program Files\Apache Software Foundation\Tomcat 10.1\webapps"
@@ -69,8 +69,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-:: Execute the compilation command
-javac -g -d "%temp%\WEB-INF\classes" -cp "%classpath%" @sources.txt
+"C:\Program Files\Java\jdk-19\bin\javac.exe" -g -d "%temp%\WEB-INF\classes" -cp "%classpath%" @sources.txt
 
 :: Delete sources.txt and libs.txt files after compilation
 del sources.txt

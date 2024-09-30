@@ -1,8 +1,12 @@
 package models;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +20,13 @@ public class PartsParCentre {
 	private Centre centre;
 	private java.math.BigDecimal valeur;
 	private java.sql.Date dateInsertion;
+
+	public PartsParCentre(Rubrique rubrique, Centre centre, BigDecimal valeur, String dateInsertion) throws Exception {
+		this.rubrique = rubrique;
+		this.centre = centre;
+		this.valeur = valeur;
+		setDate(dateInsertion);
+	}
 
 	// Constructeurs
 	public PartsParCentre() {
@@ -104,6 +115,13 @@ public class PartsParCentre {
 
 	public void setDateInsertion(java.sql.Date dateInsertion) {
 		this.dateInsertion = dateInsertion;
+	}
+
+	public void setDate(String dateStr) throws ParseException {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date parsedDate = dateFormat.parse(dateStr);
+		java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
+		this.dateInsertion = sqlDate;
 	}
 
 	public List<PartsParCentre> getAll(Connection c) throws Exception {
