@@ -201,7 +201,6 @@ public class AdministrationAnalytique {
         }
         return sum;
     }
-
     public double getTotalDepenseVariable(Connection c) throws Exception {
         double sum = 0;
         try {

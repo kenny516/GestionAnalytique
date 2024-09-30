@@ -1,10 +1,14 @@
 package models;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import database.Connect;
+import database.QueryUtil;
 
 public class Production {
 	private int id;
@@ -16,7 +20,8 @@ public class Production {
 	public Production() {
 	}
 
-	public Production(int id, int idProduit, java.sql.Date date, java.math.BigDecimal quantite , Connection c) throws Exception{
+	public Production(int id, int idProduit, java.sql.Date date, java.math.BigDecimal quantite, Connection c)
+			throws Exception {
 		this.id = id;
 		setProduit(idProduit);
 		setProduit(c);
@@ -24,7 +29,7 @@ public class Production {
 		this.quantite = quantite;
 	}
 
-	public Production(int id, int idProduit, java.sql.Date date, java.math.BigDecimal quantite){
+	public Production(int id, int idProduit, java.sql.Date date, java.math.BigDecimal quantite) {
 		setProduit(idProduit);
 		setProduit(idProduit);
 		this.date = date;
@@ -44,12 +49,12 @@ public class Production {
 		return produit.getId();
 	}
 
-	public void setProduit(int idProduit){
+	public void setProduit(int idProduit) {
 		this.produit = new Produit();
 		produit.setId(idProduit);
 	}
 
-	public void setProduit(Connection c) throws Exception{
+	public void setProduit(Connection c) throws Exception {
 		produit.getById(c, produit.getId());
 	}
 
@@ -79,7 +84,7 @@ public class Production {
 			Production prod = new Production();
 			prod.setId(rs.getInt("id"));
 			prod.setProduit(rs.getInt("idProduit"));
-			setProduit(c);
+			prod.setProduit(c);
 			prod.setDate(rs.getDate("date"));
 			prod.setQuantite(rs.getBigDecimal("quantite"));
 			all.add(prod);
@@ -171,5 +176,35 @@ public class Production {
 	public void getByIdAll(Connection c, int id) throws Exception {
 		getById(c, id);
 		setProduit(c);
+	}
+
+	public static List<Production> getByPeriodByProduit(Connection c, int idProduit, Date startDate, Date endDate) throws Exception {
+		try {
+			if (c == null) {
+				c = Connect.getConnection();
+			}
+			List<Production> result = new ArrayList<>();
+			String query = "SELECT * FROM Production WHERE idProduit = ? ";
+			query += QueryUtil.getFilterQuery(startDate, endDate, "date");
+			PreparedStatement ps = c.prepareStatement(query);
+			ps.setInt(1, idProduit);
+			QueryUtil.setStatement(ps, startDate, endDate, 2);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				Production prod = new Production();
+				prod.setId(rs.getInt("id"));
+				prod.setProduit(rs.getInt("idProduit"));
+				prod.setProduit(c);
+				prod.setDate(rs.getDate("date"));
+				prod.setQuantite(rs.getBigDecimal("quantite"));
+				result.add(prod);
+			}
+			rs.close();
+			ps.close();
+			return result;
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 }
