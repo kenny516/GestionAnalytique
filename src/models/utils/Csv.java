@@ -40,6 +40,7 @@ public class Csv {
             }
             writer.append("\n");
 
+
             // Write the data rows
             for (T obj : data) {
                 for (int i = 0; i < fields.length; i++) {

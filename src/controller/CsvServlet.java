@@ -6,10 +6,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import models.*;
 import models.utils.Csv;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.List;
@@ -68,9 +71,20 @@ public class CsvServlet extends HttpServlet {
     }
 
     // i need to implement method for import csv use the class Csv.java
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String type = request.getParameter("type");
-    String fileName = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\GestionAnalytique\\public\\csv\\"+type+".csv";
+    Part filePart = request.getPart("file"); // Récupère le fichier uploadé
+    String fileName = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\GestionAnalytique\\public\\csv\\" + type + ".csv";
+
+    try (InputStream fileContent = filePart.getInputStream();
+         FileOutputStream fos = new FileOutputStream(fileName)) {
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fileContent.read(buffer)) != -1) {
+            fos.write(buffer, 0, bytesRead);
+        }
+    }
+
     try {
         Csv.ImportResult<?> importResult = Csv.importFromCSV(fileName, getObject(type).getClass());
         Connection connection = Connect.getConnection();
