@@ -1,8 +1,11 @@
 package models;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +16,12 @@ public class Depenses {
 
 	private Rubrique rubrique;
 	private List<PartsParCentre> pCentre;
+
+	public Depenses(String date, String montant, Rubrique rubrique) throws Exception {
+		setDate(date);
+		setMontant(montant);
+		this.rubrique = rubrique;
+	}
 
 	// Constructeurs
 	public Depenses() {
@@ -41,6 +50,13 @@ public class Depenses {
 		this.date = date;
 	}
 
+	public void setDate(String dateStr) throws ParseException {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date parsedDate = dateFormat.parse(dateStr);
+		java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
+		this.date = sqlDate;
+	}
+
 	public double getMontant() {
 		return montant;
 	}
@@ -48,6 +64,11 @@ public class Depenses {
 	public void setMontant(double montant) {
 		this.montant = montant;
 	}
+
+	public void setMontant(String montant) {
+		this.montant = Double.valueOf(montant);
+	}
+	
 
 	public static List<Depenses> getAll(Connection c) throws Exception {
 		List<Depenses> depenses = new ArrayList<>();

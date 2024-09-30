@@ -27,6 +27,10 @@ public class UniteOeuvre {
 		this.id = id;
 	}
 
+	public void setId(String id) {
+		this.id = Integer.parseInt(id);
+	}
+
 	public String getNom() {
 		return nom;
 	}

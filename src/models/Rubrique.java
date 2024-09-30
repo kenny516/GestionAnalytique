@@ -1,8 +1,11 @@
 package models;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +13,18 @@ public class Rubrique {
 	private int id;
 	private String nom;
 	private boolean estVariable;
-	private UniteOeuvre uOeuvre;
+	private UniteOeuvre uOeuvre; 
 	private java.sql.Date dateInsertion;
 
 	private List<PartsParCentre> pCentre;
 	private List<Depenses> deps;
+
+	public Rubrique(String nom, boolean estVariable, UniteOeuvre uOeuvre, String dateInsertion) throws Exception{
+		this.nom = nom;
+		this.estVariable = estVariable;
+		this.uOeuvre = uOeuvre;
+		setDateInsertion(dateInsertion);
+	}
 
 	// Constructeurs
 	public Rubrique() {
@@ -90,7 +100,14 @@ public class Rubrique {
 		this.dateInsertion = dateInsertion;
 	}
 
-	public List<Rubrique> getAll(Connection c) throws Exception {
+	public void setDateInsertion(String dateInsertionStr) throws ParseException {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date parsedDate = dateFormat.parse(dateInsertionStr);
+		java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
+		this.dateInsertion = sqlDate;
+	}
+
+	public static List<Rubrique> getAll(Connection c) throws Exception {
 		List<Rubrique> result = new ArrayList<>();
 		PreparedStatement ps = c.prepareStatement("select * from Rubrique");
 		ResultSet rs = ps.executeQuery();

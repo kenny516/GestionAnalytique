@@ -103,4 +103,6 @@ del /f /q "%work_dir%\%war_name%.war"
 
 echo ---
 echo Deployment completed successfully.
+
+pause 
 echo `(^^_^^)`
