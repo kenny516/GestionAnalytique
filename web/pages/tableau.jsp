@@ -10,7 +10,8 @@ HashMap<Centre, Double> pCentres = (HashMap<Centre, Double>) request.getAttribut
 
 List<Rubrique> rubriques = (List<Rubrique>) aa.getRubriques();
 List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>) request.getAttribute("partsAndTotal");
-
+HashMap<Rubrique, Double> totalParRubrique = (HashMap<Rubrique, Double>) request.getAttribute("totalParRubrique");
+ 
 %>
 <!DOCTYPE html>
 <html>
@@ -50,6 +51,7 @@ List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>
               <% for(Centre c : centres) { %>
                 <th colspan="3"><%= c.getNom() %></th>
               <% } %>
+              <th colspan="2">Total</th>
             </tr>
             <tr>
                 <th colspan="4"></th>
@@ -58,6 +60,8 @@ List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>
                 <th>Fixe</th>
                 <th>Variable</th>
               <% } %>
+                <th>Fixe</th>
+                <th>Variable</th>
             </tr>
           </thead>
           <tbody>
@@ -70,15 +74,17 @@ List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>
               <td><%= r.getUniteOeuvre().getNom() %></td>
               <td>
                 <%
-                
+                  double totalR = r.getInMap(totalParRubrique);
                   String checked = r.isEstVariable() ? "checked" : "";
                 
                 %>
                 <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedDisabled" <%= checked %> disabled>
               </td>
-              <td class="number-cell">780000</td>
+              <td class="number-cell"><%= totalR %></td>
               <% 
                 HashMap<Centre, double[]> dataPerCentre = partsAndTotal.get(i);
+                double totalFixe = r.isEstVariable() ? 0 : totalR;
+                double totalVariable = r.isEstVariable() ? totalR : 0;
 
                 for(Centre c : centres) { 
                   double[] values = AdministrationAnalytique.get(dataPerCentre, c);
@@ -89,6 +95,8 @@ List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>
                 <td class="number-cell"><%= fixe %></td>
                 <td class="number-cell"><%= variable %></td>
               <% } %>
+                <td class="number-cell"><%= totalFixe %></td>
+                <td class="number-cell"><%= totalVariable %></td>
             </tr>
           <% } %>
           </tbody>
@@ -107,7 +115,15 @@ List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>
                   Double d = AdministrationAnalytique.getDouble(pCentres, c);
                 %>
                 <td class="number-cell" colspan="3"><%= d %></td>
-              <% } %>
+
+              <% } 
+              
+              double totalOverallF = (double) request.getAttribute("totalFixe");
+              double totalOverallV = (double) request.getAttribute("totalVariable");
+              
+              %>
+              <td class="number-cell"><%= totalOverallF %></td>
+              <td class="number-cell"><%= totalOverallV %></td>
             </tr>
           </tfoot>
         </table>

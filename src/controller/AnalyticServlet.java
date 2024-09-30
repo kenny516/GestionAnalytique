@@ -78,6 +78,7 @@ public class AnalyticServlet extends HttpServlet {
             req.setAttribute("totalFixe", aa.getTotalDepenseInvariable(c));
             req.setAttribute("totalVariable", aa.getTotalDepenseVariable(c));
             req.setAttribute("overallTotal", aa.getTotalDepense(c));
+            req.setAttribute("totalParRubrique", aa.getTotalParRubrique(c));
 
             c.close();
         } catch (Exception e) {

@@ -5,7 +5,10 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import database.*;
 public class Rubrique {
 	private int id;
@@ -297,6 +300,16 @@ public class Rubrique {
 		ps.close();
 
 		setDeps(deps);
+	}
+
+	public Double getInMap(HashMap<Rubrique, Double> map) {
+		for (Map.Entry<Rubrique, Double> entry : map.entrySet()) {
+            if (entry.getKey().getId() == this.getId()) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
 	}
 
 
