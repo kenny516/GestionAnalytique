@@ -63,6 +63,7 @@ public class Centre {
 		nature.getById(c, nature.getId());
 	}
 
+	
 	public static List<Centre> getAll(Connection c) throws Exception {
 		List<Centre> centres = new ArrayList<>();
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM Centre");
