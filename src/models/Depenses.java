@@ -1,10 +1,13 @@
 package models;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import database.Connect;
+import database.QueryUtil;
 
 public class Depenses {
 	private int id;
@@ -47,6 +50,33 @@ public class Depenses {
 
 	public void setMontant(double montant) {
 		this.montant = montant;
+	}
+
+	public static List<Depenses> getByPeriod(Connection c, Date startDate, Date endDate) throws Exception {
+		try {
+			if (c == null) {
+				c = Connect.getConnection();
+			}
+			List<Depenses> depenses = new ArrayList<>();
+			String query = "SELECT * FROM Depenses WHERE 1=1 ";
+			query+=QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
+			PreparedStatement ps = c.prepareStatement( query);
+			QueryUtil.setStatement(ps, startDate, endDate, 1);
+			ResultSet rs = ps.executeQuery();
+	
+			while (rs.next()) {
+				Depenses depense = new Depenses();
+				depense.setId(rs.getInt("id"));
+				depense.setDate(rs.getDate("dateDepense"));
+				depense.setMontant(rs.getDouble("montant"));
+				depenses.add(depense);
+			}
+			rs.close();
+			ps.close();
+			return depenses;
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	public static List<Depenses> getAll(Connection c) throws Exception {
@@ -162,6 +192,75 @@ public class Depenses {
 
 	public void setpCentre(List<PartsParCentre> pCentre) {
 		this.pCentre = pCentre;
+	}
+
+	public static List<Depenses> getVariable(Connection c, Date startDate, Date endDate) throws Exception {
+		try {
+			if (c == null) {
+				c = Connect.getConnection();
+			}
+			List<Depenses> depenses = new ArrayList<>();
+			String query = "SELECT distinct Depenses.* FROM Depenses " +
+               "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
+               "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
+               "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS true ";
+			query+=QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
+			query+=QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
+			PreparedStatement ps = c.prepareStatement( query);
+			int count = 1;
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			System.out.println(ps.toString());
+			ResultSet rs = ps.executeQuery();
+	
+			while (rs.next()) {
+				Depenses depense = new Depenses();
+				depense.setId(rs.getInt("id"));
+				depense.setDate(rs.getDate("dateDepense"));
+				depense.setMontant(rs.getDouble("montant"));
+				depenses.add(depense);
+			}
+			rs.close();
+			ps.close();
+			return depenses;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+	public static List<Depenses> getInvariable(Connection c, Date startDate, Date endDate) throws Exception {
+		try {
+			if (c == null) {
+				c = Connect.getConnection();
+			}
+			List<Depenses> depenses = new ArrayList<>();
+			String query = "SELECT distinct Depenses.* FROM Depenses " +
+               "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
+               "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
+               "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS False ";
+			query+=QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
+			query+=QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
+			PreparedStatement ps = c.prepareStatement( query);
+			int count = 1;
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			count = QueryUtil.setStatement(ps, startDate, endDate, count);
+			System.out.println(ps.toString());
+
+			ResultSet rs = ps.executeQuery();
+	
+			while (rs.next()) {
+				Depenses depense = new Depenses();
+				depense.setId(rs.getInt("id"));
+				depense.setDate(rs.getDate("dateDepense"));
+				depense.setMontant(rs.getDouble("montant"));
+				depenses.add(depense);
+			}
+			rs.close();
+			ps.close();
+			return depenses;
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 
 	public void setpCentre(Connection c) throws Exception {
