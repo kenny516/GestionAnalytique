@@ -1,4 +1,4 @@
-<form action="" class="col-6 py-3 px-4 card">
+<form action="PartsServlet" class="col-6 py-3 px-4 card" method="post">
     <h3 class="text-uppercase card-title">Parts par centre</h3>
     <div class="card-body">
         <div class="mb-3">
