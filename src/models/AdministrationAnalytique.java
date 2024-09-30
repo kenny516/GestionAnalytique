@@ -107,6 +107,41 @@ public class AdministrationAnalytique {
         return result;
     }
 
+    public HashMap<Rubrique, Double> getTotalParRubrique(Connection c)throws Exception {
+        HashMap<Rubrique, Double> result = new HashMap<Rubrique, Double>();
+        String query = "SELECT Rubrique.*, SUM(Depenses.montant) as total FROM Depenses " +
+        "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
+        "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
+        "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique " +
+        "WHERE 1=1 ";
+
+        query+=QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "dateDepense");
+        query+=QueryUtil.getFilterQuery(this.dateDebut, this.dateFin, "Rubrique.dateInsertion");
+        query+=" GROUP BY Rubrique.id";
+
+        try {
+            if(c==null){
+                c = Connect.getConnection();
+            }
+            PreparedStatement ps = c.prepareStatement( query);
+            int count = 1;
+            count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
+            count = QueryUtil.setStatement(ps, this.dateDebut, this.dateFin, count);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Rubrique rubrique = new Rubrique(rs.getInt("id"), rs.getString("nom"), rs.getBoolean("estVariable"), rs.getInt("idUniteOeuvre"), rs.getDate("dateInsertion"), c);
+                double total = rs.getDouble("total");
+                result.put(rubrique, total);
+            }  
+            ps.close(); 
+            rs.close();
+        } catch (Exception e) {
+            throw e;
+        } 
+        return result;
+
+    }
     public HashMap<Centre, Double> getTotalDepenseParCentre(Connection c) throws Exception {
         HashMap<Centre, Double> result = new HashMap<Centre, Double>();
     
@@ -151,6 +186,7 @@ public class AdministrationAnalytique {
         try {
             List<Depenses> liste = Depenses.getByPeriod(c, this.dateDebut, this.dateFin);
             for (Depenses depenses : liste) {
+                System.err.println(depenses.getMontant());
                 sum+=depenses.getMontant();
             }
         } catch (Exception e) {

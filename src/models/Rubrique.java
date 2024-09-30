@@ -31,6 +31,7 @@ public class Rubrique {
 		this.dateInsertion = dateInsertion;
 	}
 
+
 	public Rubrique(int id, String nom, boolean estVariable, int idUniteOeuvre, java.sql.Date dateInsertion, Connection c,
 			boolean tout) throws Exception {
 		this.id = id;
@@ -40,6 +41,7 @@ public class Rubrique {
 		this.setUniteOeuvre(c);
 		this.dateInsertion = dateInsertion;
 	}
+
 
 	// Getters et Setters
 	public int getId() {
