@@ -69,9 +69,9 @@ public class Depenses {
 
 	// Méthodes pour CRUD
 	public void saveNoError(Connection c) throws Exception {
-		PreparedStatement ps = c.prepareStatement("INSERT INTO Depenses (dateDepense, montant) VALUES (?, ?, ?)");
-		ps.setDate(2, getDate());
-		ps.setDouble(3, getMontant());
+		PreparedStatement ps = c.prepareStatement("INSERT INTO Depenses (dateDepense, montant) VALUES (?, ?)");
+		ps.setDate(1, getDate());
+		ps.setDouble(2, getMontant());
 		ps.executeUpdate();
 		ps.close();
 	}
@@ -105,9 +105,9 @@ public class Depenses {
 
 	public void updateNoError(Connection c) throws Exception {
 		PreparedStatement ps = c.prepareStatement("UPDATE Depenses SET dateDepense = ?, montant = ? WHERE id = ?");
-		ps.setDate(2, getDate());
-		ps.setDouble(3, getMontant());
-		ps.setInt(4, getId());
+		ps.setDate(1, getDate());
+		ps.setDouble(2, getMontant());
+		ps.setInt(3, getId());
 		ps.executeUpdate();
 		ps.close();
 	}

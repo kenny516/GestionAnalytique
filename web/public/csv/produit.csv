@@ -4,5 +4,3 @@ id,nom,uOeuvre
 3,Brine,3
 4,Brine,3
 
-id,date,montant,rubrique,pCentre
-1,2019-01-01,1000,1,[1,2]
