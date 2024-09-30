@@ -82,5 +82,12 @@ WHERE dateDepense BETWEEN '2024-08-01' AND '2024-09-21' AND Rubrique.dateInserti
 AND Rubrique.estVariable IS False;
 
 
+SELECT Rubrique.*, SUM(Depenses.montant) as total FROM Depenses 
+JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense 
+JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id
+JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique
+WHERE dateDepense BETWEEN '2024-08-01' AND '2024-09-21' AND Rubrique.dateInsertion BETWEEN '2024-08-01' AND '2024-09-21'
+GROUP BY Rubrique.id;
+
 
 
