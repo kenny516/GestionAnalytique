@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.Connect;
+import database.QueryUtil;
 
 public class Depenses {
 	private int id;
@@ -59,11 +60,11 @@ public class Depenses {
 			}
 			List<Depenses> depenses = new ArrayList<>();
 			String query = "SELECT * FROM Depenses WHERE 1=1 ";
-			query+=QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
-			PreparedStatement ps = c.prepareStatement( query);
+			query += QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
+			PreparedStatement ps = c.prepareStatement(query);
 			QueryUtil.setStatement(ps, startDate, endDate, 1);
 			ResultSet rs = ps.executeQuery();
-	
+
 			while (rs.next()) {
 				Depenses depense = new Depenses();
 				depense.setId(rs.getInt("id"));
@@ -99,14 +100,14 @@ public class Depenses {
 
 	// Méthodes pour CRUD
 	public void saveNoError(Connection c) throws Exception {
-		PreparedStatement ps = c.prepareStatement("INSERT INTO Depenses (dateDepense, montant) VALUES (?, ?, ?)");
-		ps.setDate(2, getDate());
-		ps.setDouble(3, getMontant());
+		PreparedStatement ps = c.prepareStatement("INSERT INTO Depenses (dateDepense, montant) VALUES (?, ?)");
+		ps.setDate(1, getDate());
+		ps.setDouble(2, getMontant());
 		ps.executeUpdate();
 		ps.close();
 	}
 
-	public void save(Connection c) throws Exception {
+	public void savetsotsa(Connection c) throws Exception {
 		try {
 			c.setAutoCommit(false);
 			saveNoError(c);
@@ -117,13 +118,13 @@ public class Depenses {
 		}
 	}
 
-	public void save(Connection c,List<PartsParCentre> pc) throws Exception {
+	public void save(Connection c, List<PartsParCentre> pc) throws Exception {
 		try {
 			c.setAutoCommit(false);
 
 			saveNoError(c);
 			for (PartsParCentre partsParCentre : pc) {
-				AssoDepensesParts p = new AssoDepensesParts(0, getId(),partsParCentre.getId());
+				AssoDepensesParts p = new AssoDepensesParts(0, getId(), partsParCentre.getId());
 				p.saveNoError(c);
 			}
 
@@ -131,13 +132,29 @@ public class Depenses {
 		} catch (Exception e) {
 			c.rollback();
 		}
-	} 
+	}
+
+	public void save(Connection c) throws Exception {
+		try {
+			c.setAutoCommit(false);
+
+			saveNoError(c);
+			for (PartsParCentre partsParCentre : getpCentre()) {
+				AssoDepensesParts p = new AssoDepensesParts(0, getId(), partsParCentre.getId());
+				p.saveNoError(c);
+			}
+
+			c.commit();
+		} catch (Exception e) {
+			c.rollback();
+		}
+	}
 
 	public void updateNoError(Connection c) throws Exception {
 		PreparedStatement ps = c.prepareStatement("UPDATE Depenses SET dateDepense = ?, montant = ? WHERE id = ?");
-		ps.setDate(2, getDate());
-		ps.setDouble(3, getMontant());
-		ps.setInt(4, getId());
+		ps.setDate(1, getDate());
+		ps.setDouble(2, getMontant());
+		ps.setInt(3, getId());
 		ps.executeUpdate();
 		ps.close();
 	}
@@ -201,18 +218,18 @@ public class Depenses {
 			}
 			List<Depenses> depenses = new ArrayList<>();
 			String query = "SELECT distinct Depenses.* FROM Depenses " +
-               "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
-               "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
-               "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS true ";
-			query+=QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
-			query+=QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
-			PreparedStatement ps = c.prepareStatement( query);
+					"JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
+					"JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
+					"JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS true ";
+			query += QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
+			query += QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
+			PreparedStatement ps = c.prepareStatement(query);
 			int count = 1;
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			System.out.println(ps.toString());
 			ResultSet rs = ps.executeQuery();
-	
+
 			while (rs.next()) {
 				Depenses depense = new Depenses();
 				depense.setId(rs.getInt("id"));
@@ -235,19 +252,19 @@ public class Depenses {
 			}
 			List<Depenses> depenses = new ArrayList<>();
 			String query = "SELECT distinct Depenses.* FROM Depenses " +
-               "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
-               "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
-               "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS False ";
-			query+=QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
-			query+=QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
-			PreparedStatement ps = c.prepareStatement( query);
+					"JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
+					"JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
+					"JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique WHERE Rubrique.estVariable IS False ";
+			query += QueryUtil.getFilterQuery(startDate, endDate, "dateDepense");
+			query += QueryUtil.getFilterQuery(startDate, endDate, "Rubrique.dateInsertion");
+			PreparedStatement ps = c.prepareStatement(query);
 			int count = 1;
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			count = QueryUtil.setStatement(ps, startDate, endDate, count);
 			System.out.println(ps.toString());
 
 			ResultSet rs = ps.executeQuery();
-	
+
 			while (rs.next()) {
 				Depenses depense = new Depenses();
 				depense.setId(rs.getInt("id"));
@@ -266,7 +283,8 @@ public class Depenses {
 	public void setpCentre(Connection c) throws Exception {
 		List<PartsParCentre> partsParCentre = new ArrayList<>();
 		PreparedStatement ps = c
-				.prepareStatement("select * from PartsParCentre where id in (select idPart from AssoDepensesParts where idDepense = ?)");
+				.prepareStatement(
+						"select * from PartsParCentre where id in (select idPart from AssoDepensesParts where idDepense = ?)");
 		ps.setInt(1, getId());
 		ResultSet rs = ps.executeQuery();
 
@@ -288,11 +306,12 @@ public class Depenses {
 		setpCentre(partsParCentre);
 	}
 
-	public void setRubrique(Connection c) throws Exception{
+	public void setRubrique(Connection c) throws Exception {
 		this.rubrique = new Rubrique();
 		this.rubrique.getById(c, id);
 		getRubrique().setpCentre(c);
 	}
+
 	public Rubrique getRubrique() {
 		return rubrique;
 	}
