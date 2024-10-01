@@ -167,6 +167,7 @@ public class Depenses {
 			c.commit();
 		} catch (Exception e) {
 			c.rollback();
+			throw e;
 		}
 	}
 

@@ -269,8 +269,10 @@ public class Rubrique {
 	public void setpCentre(Connection c) throws Exception {
 		List<PartsParCentre> partsParCentre = new ArrayList<>();
 		PreparedStatement ps = c.prepareStatement(
-				"select * from PartsParCentre having dateInsertion = max(dateInsertion) and idRubrique = ? group by idCentre");
+				"select * from PartsParCentre WHERE idRubrique = ? group by idCentre having dateInsertion = max(dateInsertion) ");
 		ps.setInt(1, id);
+
+		System.out.println(ps.toString());
 
 		ResultSet rs = ps.executeQuery();
 

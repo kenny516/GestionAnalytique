@@ -39,6 +39,8 @@ public class DepenseServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
         throws ServletException, IOException {
+            PrintWriter out = response.getWriter();
+
         String idRubrique = request.getParameter("idRubrique");
         String date = request.getParameter("dateDepense");
         String montant = request.getParameter("montant");
@@ -47,13 +49,14 @@ public class DepenseServlet extends HttpServlet {
 
         try (Connection conn = Connect.getConnection()) {
             rubrique.getById(conn, Integer.parseInt(idRubrique));
+            // out.println(rubrique.getId());
+            rubrique.setpCentre(conn);
             Depenses d = new Depenses(date,montant,rubrique);
-            d.save(conn);
+            d.save(conn, rubrique.getpCentre());
             
             response.sendRedirect(request.getContextPath() + "/DepenseServlet");
 
         } catch (Exception e) {
-            PrintWriter out = response.getWriter();
             out.println(e);
             out.flush();
         }

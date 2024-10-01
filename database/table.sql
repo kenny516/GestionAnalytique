@@ -60,7 +60,7 @@ create table Depenses (
 )engine=innodb;
 
 create table AssoDepensesParts (
-		id INT,
+		id INT PRIMARY KEY AUTO_INCREMENT,
     idDepense INT,
     idPart INT,
     PRIMARY KEY (idDepense, idPart),
