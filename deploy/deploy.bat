@@ -69,6 +69,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:: Execute the compilation command
 "C:\Program Files\Java\jdk-19\bin\javac.exe" -g -d "%temp%\WEB-INF\classes" -cp "%classpath%" @sources.txt
 
 :: Delete sources.txt and libs.txt files after compilation

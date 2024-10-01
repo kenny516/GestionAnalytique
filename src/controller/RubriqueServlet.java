@@ -56,12 +56,12 @@ public class RubriqueServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/PartsServlet");
             
         } catch (Exception e) {
-            out.println(e);
+            // out.println(e);
             
-            for (StackTraceElement iterable_element : e.getStackTrace()) {
-                out.print(iterable_element);
-            }
-            out.flush();
+            // for (StackTraceElement iterable_element : e.getStackTrace()) {
+            //     out.print(iterable_element);
+            // }
+            // out.flush();
         }
 
     }

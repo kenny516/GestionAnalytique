@@ -116,7 +116,7 @@ public class AdministrationAnalytique {
 
     public HashMap<Rubrique, Double> getTotalParRubrique(Connection c)throws Exception {
         HashMap<Rubrique, Double> result = new HashMap<Rubrique, Double>();
-        String query = "SELECT Rubrique.*, SUM(Depenses.montant) as total FROM Depenses " +
+        String query = "SELECT Rubrique.*, Depenses.montant as total FROM Depenses " +
         "JOIN AssoDepensesParts ON Depenses.id = AssoDepensesParts.idDepense " +
         "JOIN PartsParCentre ON AssoDepensesParts.idPart = PartsParCentre.id " +
         "JOIN Rubrique ON Rubrique.id = PartsParCentre.idRubrique " +

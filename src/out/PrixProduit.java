@@ -19,19 +19,19 @@ public class PrixProduit {
 		setSujet(c, idProduit);
 		setProds(Production.getByPeriodByProduit(c, idProduit, aa.getDateDebut(), aa.getDateFin()));
 		setDepenseParCentre(aa.getTotalDepenseParCentre(c));
-		
-		setDepenseParCentreNonAdministratif("Centre1");
+
+		setDepenseParCentreNonAdministratif("Centre logistique");
 		setQuantite();
 		setPrix_unitaire();
 	}
 
-	public static List<PrixProduit> getPrixProduits(AdministrationAnalytique aa, Connection c) throws Exception{
+	public static List<PrixProduit> getPrixProduits(AdministrationAnalytique aa, Connection c) throws Exception {
 		List<PrixProduit> pp = new ArrayList<>();
 
 		List<Produit> produits = new Produit().getAll(c);
-    for (Produit produit : produits) {
-      pp.add(new PrixProduit(aa, c, produit.getId()));
-    }
+		for (Produit produit : produits) {
+			pp.add(new PrixProduit(aa, c, produit.getId()));
+		}
 
 		return pp;
 	}
@@ -39,7 +39,7 @@ public class PrixProduit {
 	// done
 	HashMap<Centre, Double> depenseParCentreNonAdministratif;
 
-	//done
+	// done
 	double cout_non_admin;
 	double cout_admin;
 
@@ -61,7 +61,7 @@ public class PrixProduit {
 		return quantite;
 	}
 
-	public void setQuantite(){
+	public void setQuantite() {
 		double quantite = 0;
 		for (Production production : getProds()) {
 			quantite += production.getQuantite().doubleValue();
@@ -98,7 +98,7 @@ public class PrixProduit {
 	}
 
 	public void setPrix_unitaire() {
-		double prix_unitaire = (getCout_non_admin()+getCout_admin())/getQuantite();
+		double prix_unitaire = (getCout_non_admin() + getCout_admin()) / getQuantite();
 		this.prix_unitaire = prix_unitaire;
 	}
 
@@ -114,7 +114,7 @@ public class PrixProduit {
 		Centre alana = new Centre();
 		for (Centre c : result.keySet()) {
 			if (c.getNom().equals(administratif)) {
-				alana= c;
+				alana = c;
 			} else {
 				cout_non_admin += result.get(c);
 			}
@@ -125,8 +125,8 @@ public class PrixProduit {
 		setCout_non_admin(cout_non_admin);
 
 		for (Centre c : result.keySet()) {
-			double proportion = result.get(c)/cout_non_admin;
-			double nouv_valeur = proportion*cout_admin+result.get(c);
+			double proportion = result.get(c) / cout_non_admin;
+			double nouv_valeur = proportion * cout_admin + result.get(c);
 			result.put(c, nouv_valeur);
 		}
 

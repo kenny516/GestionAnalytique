@@ -318,7 +318,7 @@ public class Rubrique {
 
 	public Double getInMap(HashMap<Rubrique, Double> map) {
 		for (Map.Entry<Rubrique, Double> entry : map.entrySet()) {
-            if (entry.getKey().getId() == this.getId()) {
+            if (entry.getKey().getId() == this.getId() || entry.getKey().getNom().equals(this.getNom())) {
                 return entry.getValue();
             }
         }

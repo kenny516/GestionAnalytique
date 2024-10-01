@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.sql.Date, java.util.*, models.*" %>
+<%@ page import="java.sql.Date, out.PrixProduit, java.util.*, models.*" %>
 
 <%
 
@@ -11,6 +11,12 @@ HashMap<Centre, Double> pCentres = (HashMap<Centre, Double>) request.getAttribut
 List<Rubrique> rubriques = (List<Rubrique>) aa.getRubriques();
 List<HashMap<Centre, double[]>> partsAndTotal = (List<HashMap<Centre, double[]>>) request.getAttribute("partsAndTotal");
 HashMap<Rubrique, Double> totalParRubrique = (HashMap<Rubrique, Double>) request.getAttribute("totalParRubrique");
+
+// for(Map.Entry<Rubrique, Double> entry : totalParRubrique.entrySet()) {
+//   out.println(entry.getKey().getNom() + " " + entry.getValue());
+// }
+
+List<PrixProduit> prods = (List<PrixProduit>) request.getAttribute("listeProductions");
  
 %>
 <!DOCTYPE html>
@@ -39,6 +45,20 @@ HashMap<Rubrique, Double> totalParRubrique = (HashMap<Rubrique, Double>) request
       <p>
         Periode : <span id="start-date"></span> au <span id="end-date"></span>
       </p>
+
+      <form action="analytics" class="mb-3 d-flex flex-column">
+      <div class="d-flex mb-3">
+        <div class="mx-3">
+            <label class="form-label">Date debut</label>
+            <input type="date" name="startDate" class="form-control" value="<%= aa.getDateDebut().toString() %>">
+        </div>
+        <div class="mx-3">
+            <label class="form-label">Date fin</label>
+            <input type="date" name="endDate" class="form-control" value="<%= aa.getDateFin().toString() %>">
+        </div>
+      </div>
+        <button type="submit" class="btn btn-primary">Valider</button>
+      </form>
 
       <div id="main-table">
         <table class="table table-bordered table-hover">
@@ -127,6 +147,39 @@ HashMap<Rubrique, Double> totalParRubrique = (HashMap<Rubrique, Double>) request
             </tr>
           </tfoot>
         </table>
+      </div>
+
+      <div class="d-flex justify-contents-between">
+        <% for(PrixProduit pp : prods) { 
+            String title = "Cout du " + pp.getSujet().getuOeuvre().getNom() + " de " + pp.getSujet().getNom();
+            if(pp.getQuantite() != 0) {
+        %>
+        <div class="card mx-3 p-3">
+          <h4 class="card-title"><%= title %></h4>
+          <table class="table table-bordered">
+            <tr>
+              <th>Unite d'oeuvre</th>
+              <td><%= pp.getSujet().getuOeuvre().getNom() %></td>
+            </tr>
+            <tr>
+              <th>Quantite</th>
+              <td class="number-cell"><%= pp.getQuantite() %></td>
+            </tr>
+            <% for(Map.Entry<Centre, Double> d : pp.getDepenseParCentre().entrySet()) {
+                
+              %>
+                <tr>
+                  <th><% out.println("Cout " + d.getKey().getNom()); %></th>
+                  <td class="number-cell"><%= d.getValue() %></td>
+                </tr>
+            <% } %>
+            <tr>
+              <th><%= title %></th>
+              <td class="number-cell"><%= pp.getPrix_unitaire() %></td>
+            </tr>
+          </table>
+        </div>
+        <% } } %>
       </div>
 
       <script>

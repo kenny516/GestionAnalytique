@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.AdministrationAnalytique;
 import models.Centre;
+import out.PrixProduit;
 
 @WebServlet("/analytics")
 public class AnalyticServlet extends HttpServlet {
@@ -79,6 +80,8 @@ public class AnalyticServlet extends HttpServlet {
             req.setAttribute("totalVariable", aa.getTotalDepenseVariable(c));
             req.setAttribute("overallTotal", aa.getTotalDepense(c));
             req.setAttribute("totalParRubrique", aa.getTotalParRubrique(c));
+
+            req.setAttribute("listeProductions", PrixProduit.getPrixProduits(aa, c));
 
             c.close();
         } catch (Exception e) {
